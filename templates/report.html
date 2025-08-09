@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title or 'Survey Processing Report' }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1, h2, h3 { color: #222; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 16px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    .small { color: #555; font-size: 12px; }
+    .badge { display: inline-block; padding: 2px 8px; background: #eef; border: 1px solid #99c; border-radius: 12px; }
+    .section { margin-top: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { border: 1px solid #ddd; padding: 12px; border-radius: 8px; background: #fff; }
+    img { max-width: 100%; height: auto; }
+    .footer { margin-top: 32px; font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>{{ title or 'Survey Processing Report' }}</h1>
+  <div class="small">Generated at: {{ generated_at }}</div>
+  <div class="small">Rows: {{ n_rows }} | Columns: {{ n_cols }}</div>
+
+  <div class="section">
+    <h2>Configuration</h2>
+    <div class="card">
+      <strong>Imputation:</strong> {{ config.imputation_method }}<br />
+      <strong>Outlier detection:</strong> {{ config.outlier_method }}<br />
+      <strong>Winsorization:</strong> {{ 'On' if config.winsorize_flag else 'Off' }}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Diagnostics & Logs</h2>
+    <div class="card">
+      <ul>
+      {% for message in logs %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Weighted Estimates</h2>
+    <table>
+      <thead>
+        <tr>
+          {% for col in estimates_columns %}<th>{{ col }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in estimates %}
+        <tr>
+          {% for col in estimates_columns %}<td>{{ row[col] }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if charts %}
+  <div class="section">
+    <h2>Visualizations</h2>
+    <div class="grid">
+      {% for c in charts %}
+      <div class="card">
+        <h3>{{ c.title }}</h3>
+        <img src="data:image/png;base64,{{ c.png_base64 }}" alt="Chart" />
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="footer">
+    This is an auto-generated report. Methods: KNN/Median/Mean imputation; IQR/Z-score outlier handling; weighted estimates with margins of error.
+  </div>
+</body>
+</html>

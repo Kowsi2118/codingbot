@@ -1,0 +1,14 @@
+streamlit
+pandas
+numpy
+scikit-learn
+statsmodels
+duckdb
+jinja2
+plotly
+openpyxl
+pdfkit
+matplotlib
+openai
+sqlglot
+kaleido
